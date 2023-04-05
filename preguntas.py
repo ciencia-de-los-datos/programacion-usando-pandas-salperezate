@@ -64,9 +64,9 @@ def pregunta_09():
     return tbl0
 
 def pregunta_10():
-    # Construya una tabla que contenga _c1 y una lista separada por ':' de los valores de
-    # la columna _c2 para el archivo `tbl0.tsv`.
-    return tbl0.groupby('_c1').agg(lambda x: ':'.join(map(str, x)))['_c2']
+    tbl0.sort_values(by=['_c1', '_c2'], inplace=True)
+    grouped = tbl0.groupby('_c1')['_c2'].apply(lambda x: ':'.join(map(str, x))).reset_index(name='_c0')
+    return grouped
 
 
     """
