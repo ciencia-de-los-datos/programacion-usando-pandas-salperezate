@@ -85,62 +85,19 @@ def pregunta_10():
 
 
 def pregunta_11():
-    # Construya una tabla que contenga _c0 y una lista separada por ',' de los valores de
-    # la columna _c4 del archivo `tbl1.tsv`.
-    return tbl1.groupby('_c0').agg(lambda x: ','.join(map(str, x)))['_c4']
-
-
-    """
-    Construya una tabla que contenga _c0 y una lista separada por ',' de los valores de
-    la columna _c4 del archivo `tbl1.tsv`.
-
-    Rta/
-        _c0      _c4
-    0     0    b,f,g
-    1     1    a,c,f
-    2     2  a,c,e,f
-    3     3      a,b
-    ...
-    37   37  a,c,e,f
-    38   38      d,e
-    39   39    a,d,f
-    """
+    lista = tbl1.groupby('_c0', as_index=False)['_c4'].apply(lambda x: ','.join(sorted(x))).reset_index(drop=True)
+    return  lista
 
 
 def pregunta_12():
-    # Construya una tabla que contenga _c0 y una lista separada por ',' de los valores de
-    # la columna _c5a y _c5b (unidos por ':') de la tabla `tbl2.tsv`.
-    return tbl2.groupby('_c0').agg(lambda x: ','.join(map(str, x)))['_c5a'] + ':' + tbl2.groupby('_c0').agg(lambda x: ','.join(map(str, x)))['_c5b']
-    """
-    Construya una tabla que contenga _c0 y una lista separada por ',' de los valores de
-    la columna _c5a y _c5b (unidos por ':') de la tabla `tbl2.tsv`.
+    tbl2.sort_values(by=['_c0', '_c5a', '_c5b'], inplace=True)
+    tbl2['_c5'] = tbl2['_c5a'] + ':' + tbl2['_c5b'].astype(str)
+    result = tbl2.groupby('_c0')['_c5'].apply(lambda x: ','.join(x)).reset_index()
 
-    Rta/
-        _c0                                  _c5
-    0     0        bbb:0,ddd:9,ggg:8,hhh:2,jjj:3
-    1     1              aaa:3,ccc:2,ddd:0,hhh:9
-    2     2              ccc:6,ddd:2,ggg:5,jjj:1
-    ...
-    37   37                    eee:0,fff:2,hhh:6
-    38   38                    eee:0,fff:9,iii:2
-    39   39                    ggg:3,hhh:8,jjj:5
-    """
+    return result
 
 
 def pregunta_13():
-    
-
-    """
-    Si la columna _c0 es la clave en los archivos `tbl0.tsv` y `tbl2.tsv`, compute la
-    suma de tbl2._c5b por cada valor en tbl0._c1.
-
-    Rta/
-    _c1
-    A    146
-    B    134
-    C     81
-    D    112
-    E    275
-    Name: _c5b, dtype: int64
-    """
-    return
+    joined = pd.merge(tbl0, tbl2, on='_c0')
+    result = joined.groupby('_c1')['_c5b'].sum()
+    return result
